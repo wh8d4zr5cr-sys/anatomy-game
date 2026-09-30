@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+<title>Anatomy 3D Study Game</title>
+<style>
+:root{--bg:#080b12;--panel:#101622;--panel2:#151d2c;--text:#eef4ff;--muted:#94a3b8;--line:#263247;--accent:#5eead4;--good:#22c55e;--bad:#ef4444;--warn:#f59e0b;--bone:#e9e2c7;--muscle:#d66562}
+*{box-sizing:border-box}html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}button,select,input{font:inherit}button,select,input[type=text]{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:12px}.app{height:100%;display:grid;grid-template-columns:minmax(0,1.45fr) minmax(320px,.85fr);overflow:hidden}.viewer{position:relative;min-height:45vh;background:radial-gradient(circle at 50% 35%,#152036 0,#080b12 70%)}#canvasHost{position:absolute;inset:0}.toolbar{position:absolute;z-index:5;left:10px;right:10px;top:10px;display:flex;gap:8px;flex-wrap:wrap;pointer-events:none}.toolbar>*{pointer-events:auto}.btn{min-height:42px;padding:9px 12px;font-weight:700;cursor:pointer;touch-action:manipulation}.btn.primary{background:var(--accent);color:#06201d;border-color:transparent}.btn.good{background:var(--good);border-color:transparent}.btn.bad{background:var(--bad);border-color:transparent}.btn.ghost{background:rgba(16,22,34,.85);backdrop-filter:blur(7px)}.viewBtns{position:absolute;z-index:5;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px}.viewBtns .btn{min-height:38px;padding:7px 10px;font-size:13px}.statusPill{position:absolute;right:10px;bottom:12px;z-index:5;background:rgba(16,22,34,.88);border:1px solid var(--line);border-radius:999px;padding:8px 11px;color:var(--muted);font-size:12px;max-width:55%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.panel{height:100%;overflow:auto;border-left:1px solid var(--line);background:var(--panel);padding:14px}.topline{display:flex;justify-content:space-between;gap:8px;align-items:center}.title{font-size:20px;font-weight:900}.sub{color:var(--muted);font-size:13px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:12px 0}.stat{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:9px;text-align:center}.stat b{display:block;font-size:18px}.stat span{font-size:11px;color:var(--muted)}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}.row>*{flex:1}.row label{font-size:12px;color:var(--muted);min-width:100%}select,input[type=text]{width:100%;min-height:44px;padding:9px 10px}.card{background:#0d1320;border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px}.prompt{font-size:20px;font-weight:850;line-height:1.25;margin-bottom:10px}.detail{color:var(--muted);font-size:13px;line-height:1.45}.choices{display:grid;gap:8px;margin-top:10px}.choice{width:100%;min-height:48px;text-align:left;padding:11px 12px;border-radius:12px;cursor:pointer;font-weight:700}.choice.correct{background:rgba(34,197,94,.22);border-color:var(--good)}.choice.wrong{background:rgba(239,68,68,.22);border-color:var(--bad)}.feedback{min-height:24px;font-weight:800;margin-top:10px}.feedback.good{color:#86efac}.feedback.bad{color:#fca5a5}.chips{display:flex;gap:6px;flex-wrap:wrap;max-height:150px;overflow:auto;padding:4px 0}.chip{flex:0 0 auto!important;min-height:34px;padding:7px 9px;border-radius:999px;background:#111827;color:var(--muted);border:1px solid var(--line);cursor:pointer;font-size:12px}.chip.on{color:#06201d;background:var(--accent);border-color:transparent}.tiny{font-size:12px;color:var(--muted)}.switch{display:inline-flex;align-items:center;gap:7px;color:var(--muted);font-size:12px;flex:0 0 auto!important}.switch input{accent-color:var(--accent)}.match-label{user-select:none;touch-action:manipulation}.infoName{font-size:23px;font-weight:900}.latin{font-style:italic;color:#a7f3d0;margin:3px 0 9px}.kv{display:grid;grid-template-columns:82px 1fr;gap:6px 8px;font-size:13px}.kv b{color:#cbd5e1}.progressRow{margin:10px 0}.bar{height:9px;background:#1e293b;border-radius:99px;overflow:hidden}.bar>i{display:block;height:100%;background:var(--accent)}.modal{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:18px}.modal.open{display:flex}.modalBox{width:min(720px,100%);max-height:88vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px}.modalHead{display:flex;justify-content:space-between;align-items:center;gap:10px}.missed{display:grid;gap:7px}.missed div{padding:8px;background:var(--panel2);border-radius:9px}.dropHint{outline:2px dashed var(--accent)!important}.hidden{display:none!important}
+@media(max-width:850px){.app{grid-template-columns:1fr;grid-template-rows:52vh 1fr;overflow:auto}.viewer{height:52vh;min-height:52vh;position:sticky;top:0;z-index:2}.panel{height:auto;border-left:0;border-top:1px solid var(--line);overflow:visible;padding-bottom:28px}.toolbar{right:8px;left:8px}.toolbar .btn{min-height:38px;padding:7px 9px;font-size:12px}.viewBtns{bottom:8px}.statusPill{bottom:54px;max-width:65%}.stats{position:sticky;top:52vh;z-index:4;background:var(--panel);padding:7px 0;margin:0 -2px 8px}.prompt{font-size:18px}}
+</style>
+</head>
+<body>
+<div class="app">
+<section class="viewer">
+  <div id="canvasHost"></div>
+  <div id="renderError" class="hidden" style="position:absolute;z-index:8;left:50%;top:50%;transform:translate(-50%,-50%);width:min(520px,88%);padding:16px;border-radius:16px;background:rgba(16,22,34,.96);border:1px solid #ef4444;color:#eef4ff;text-align:center;line-height:1.45"></div>
+  <div class="toolbar">
+    <button class="btn ghost" id="loadBtn">Load model (.glb)</button><input id="fileInput" type="file" accept=".glb,model/gltf-binary" hidden>
+    <select id="layerSelect" class="btn ghost" aria-label="Layer"><option value="both">Bones + muscles</option><option value="bone">Skeleton only</option><option value="muscle">Muscles only</option></select>
+    <button class="btn ghost" id="resetBtn">Reset model</button>
+  </div>
+  <div class="viewBtns"><button class="btn ghost" data-view="front">Front</button><button class="btn ghost" data-view="back">Back</button><button class="btn ghost" data-view="left">Left</button><button class="btn ghost" data-view="right">Right</button></div>
+  <div class="statusPill" id="modelStatus">Fallback model • drag to rotate • pinch/scroll to zoom</div>
+</section>
+<section class="panel">
+  <div class="topline"><div><div class="title">Anatomy 3D</div><div class="sub">Explore • identify • match • muscle function</div></div><button class="btn" id="progressBtn">Progress</button></div>
+  <div class="stats"><div class="stat"><b id="score">0</b><span>Score</span></div><div class="stat"><b id="streak">0</b><span>Streak</span></div><div class="stat"><b id="qnum">0/0</b><span>Question</span></div><div class="stat"><b id="timer">—</b><span>Time</span></div></div>
+  <div class="row"><div><label>Mode</label><select id="mode"><option value="explore">Explore</option><option value="identify">Identify</option><option value="matching">Matching</option><option value="function">Muscle function</option></select></div><div><label>Answer style</label><select id="answerStyle"><option value="mc">Multiple choice</option><option value="typed">Typed answer</option><option value="reverse">Reverse / tap model</option></select></div></div>
+  <div class="row"><div><label>Filter</label><select id="kindFilter"><option value="both">Bones + muscles</option><option value="bone">Bones only</option><option value="muscle">Muscles only</option></select></div><div><label>Questions</label><select id="questionCount"><option>10</option><option>25</option><option>50</option><option value="all">All</option></select></div></div>
+  <div class="row"><label>Sections</label><div id="sectionChips" class="chips"></div></div>
+  <div class="row"><button class="btn" id="allSections">All sections</button><button class="btn" id="clearSections">Clear</button><label class="switch"><input type="checkbox" id="timerToggle"> Timer</label></div>
+  <div class="row"><button class="btn primary" id="startBtn">Start / Restart</button><button class="btn" id="hintBtn">Hint</button></div>
+  <div class="card" id="questionCard"><div class="prompt" id="prompt">Tap a structure to explore it.</div><div class="detail" id="questionDetail">The built-in model uses simple primitives; load a detailed GLB anytime.</div><div id="choices" class="choices"></div><div id="typedWrap" class="row hidden"><input id="typedAnswer" type="text" placeholder="Type the structure name…" autocomplete="off"><button class="btn primary" id="submitTyped">Check</button></div><div id="feedback" class="feedback"></div></div>
+  <div class="card" id="infoCard"><div class="tiny">Selected structure</div><div class="infoName" id="infoName">None</div><div class="latin" id="infoLatin"></div><div class="kv" id="infoDetails"></div></div>
+</section>
+</div>
+<div class="modal" id="progressModal"><div class="modalBox"><div class="modalHead"><h2>Mastery by section</h2><button class="btn" data-close="progressModal">Close</button></div><div id="progressBody"></div></div></div>
+<div class="modal" id="summaryModal"><div class="modalBox"><div class="modalHead"><h2>Quiz summary</h2><button class="btn" data-close="summaryModal">Close</button></div><div id="summaryBody"></div><div class="row"><button class="btn primary" id="retryMissed">Retry missed</button><button class="btn" id="summaryDone">Done</button></div></div></div>
+
+<!-- Three.js core + OrbitControls use the same cdnjs release. GLTFLoader is optional and version-matched. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+'use strict';
+
+// =============================================================
+// EASY-TO-EDIT ANATOMY DATA: 206 adult bones + 75 major muscles.
+// Every record is quiz-ready. Imported GLB mesh names map into it.
+// =============================================================
+const STRUCTURES = [
+  {id:'b001',kind:'bone',name:'Frontal bone',latin:'Os frontale',section:'Skull & face'},
+  {id:'b002',kind:'bone',name:'Occipital bone',latin:'Os occipitale',section:'Skull & face'},
+  {id:'b003',kind:'bone',name:'Sphenoid bone',latin:'Os sphenoidale',section:'Skull & face'},
+  {id:'b004',kind:'bone',name:'Ethmoid bone',latin:'Os ethmoidale',section:'Skull & face'},
+  {id:'b005',kind:'bone',name:'Left Parietal bone',latin:'Os parietale',section:'Skull & face'},
+  {id:'b006',kind:'bone',name:'Right Parietal bone',latin:'Os parietale',section:'Skull & face'},
+  {id:'b007',kind:'bone',name:'Left Temporal bone',latin:'Os temporale',section:'Skull & face'},
+  {id:'b008',kind:'bone',name:'Right Temporal bone',latin:'Os temporale',section:'Skull & face'},
+  {id:'b009',kind:'bone',name:'Mandible',latin:'Mandibula',section:'Skull & face'},
+  {id:'b010',kind:'bone',name:'Left Maxilla',latin:'Maxilla',section:'Skull & face'},
+  {id:'b011',kind:'bone',name:'Right Maxilla',latin:'Maxilla',section:'Skull & face'},
+  {id:'b012',kind:'bone',name:'Left Zygomatic bone',latin:'Os zygomaticum',section:'Skull & face'},
+  {id:'b013',kind:'bone',name:'Right Zygomatic bone',latin:'Os zygomaticum',section:'Skull & face'},
+  {id:'b014',kind:'bone',name:'Left Nasal bone',latin:'Os nasale',section:'Skull & face'},
+  {id:'b015',kind:'bone',name:'Right Nasal bone',latin:'Os nasale',section:'Skull & face'},
+  {id:'b016',kind:'bone',name:'Left Lacrimal bone',latin:'Os lacrimale',section:'Skull & face'},
+  {id:'b017',kind:'bone',name:'Right Lacrimal bone',latin:'Os lacrimale',section:'Skull & face'},
+  {id:'b018',kind:'bone',name:'Left Palatine bone',latin:'Os palatinum',section:'Skull & face'},
+  {id:'b019',kind:'bone',name:'Right Palatine bone',latin:'Os palatinum',section:'Skull & face'},
+  {id:'b020',kind:'bone',name:'Left Inferior nasal concha',latin:'Concha nasalis inferior',section:'Skull & face'},
+  {id:'b021',kind:'bone',name:'Right Inferior nasal concha',latin:'Concha nasalis inferior',section:'Skull & face'},
+  {id:'b022',kind:'bone',name:'Vomer',latin:'Vomer',section:'Skull & face'},
+  {id:'b023',kind:'bone',name:'Left Malleus',latin:'Malleus',section:'Skull & face'},
+  {id:'b024',kind:'bone',name:'Right Malleus',latin:'Malleus',section:'Skull & face'},
+  {id:'b025',kind:'bone',name:'Left Incus',latin:'Incus',section:'Skull & face'},
+  {id:'b026',kind:'bone',name:'Right Incus',latin:'Incus',section:'Skull & face'},
+  {id:'b027',kind:'bone',name:'Left Stapes',latin:'Stapes',section:'Skull & face'},
+  {id:'b028',kind:'bone',name:'Right Stapes',latin:'Stapes',section:'Skull & face'},
+  {id:'b029',kind:'bone',name:'Hyoid bone',latin:'Os hyoideum',section:'Skull & face'},
+  {id:'b030',kind:'bone',name:'Cervical vertebra C1',latin:'Vertebra cervicalis 1',section:'Spine'},
+  {id:'b031',kind:'bone',name:'Cervical vertebra C2',latin:'Vertebra cervicalis 2',section:'Spine'},
+  {id:'b032',kind:'bone',name:'Cervical vertebra C3',latin:'Vertebra cervicalis 3',section:'Spine'},
+  {id:'b033',kind:'bone',name:'Cervical vertebra C4',latin:'Vertebra cervicalis 4',section:'Spine'},
+  {id:'b034',kind:'bone',name:'Cervical vertebra C5',latin:'Vertebra cervicalis 5',section:'Spine'},
+  {id:'b035',kind:'bone',name:'Cervical vertebra C6',latin:'Vertebra cervicalis 6',section:'Spine'},
+  {id:'b036',kind:'bone',name:'Cervical vertebra C7',latin:'Vertebra cervicalis 7',section:'Spine'},
+  {id:'b037',kind:'bone',name:'Thoracic vertebra T1',latin:'Vertebra thoracica 1',section:'Spine'},
+  {id:'b038',kind:'bone',name:'Thoracic vertebra T2',latin:'Vertebra thoracica 2',section:'Spine'},
+  {id:'b039',kind:'bone',name:'Thoracic vertebra T3',latin:'Vertebra thoracica 3',section:'Spine'},
+  {id:'b040',kind:'bone',name:'Thoracic vertebra T4',latin:'Vertebra thoracica 4',section:'Spine'},
+  {id:'b041',kind:'bone',name:'Thoracic vertebra T5',latin:'Vertebra thoracica 5',section:'Spine'},
+  {id:'b042',kind:'bone',name:'Thoracic vertebra T6',latin:'Vertebra thoracica 6',section:'Spine'},
+  {id:'b043',kind:'bone',name:'Thoracic vertebra T7',latin:'Vertebra thoracica 7',section:'Spine'},
+  {id:'b044',kind:'bone',name:'Thoracic vertebra T8',latin:'Vertebra thoracica 8',section:'Spine'},
+  {id:'b045',kind:'bone',name:'Thoracic vertebra T9',latin:'Vertebra thoracica 9',section:'Spine'},
+  {id:'b046',kind:'bone',name:'Thoracic vertebra T10',latin:'Vertebra thoracica 10',section:'Spine'},
+  {id:'b047',kind:'bone',name:'Thoracic vertebra T11',latin:'Vertebra thoracica 11',section:'Spine'},
+  {id:'b048',kind:'bone',name:'Thoracic vertebra T12',latin:'Vertebra thoracica 12',section:'Spine'},
+  {id:'b049',kind:'bone',name:'Lumbar vertebra L1',latin:'Vertebra lumbalis 1',section:'Spine'},
+  {id:'b050',kind:'bone',name:'Lumbar vertebra L2',latin:'Vertebra lumbalis 2',section:'Spine'},
+  {id:'b051',kind:'bone',name:'Lumbar vertebra L3',latin:'Vertebra lumbalis 3',section:'Spine'},
+  {id:'b052',kind:'bone',name:'Lumbar vertebra L4',latin:'Vertebra lumbalis 4',section:'Spine'},
+  {id:'b053',kind:'bone',name:'Lumbar vertebra L5',latin:'Vertebra lumbalis 5',section:'Spine'},
+  {id:'b054',kind:'bone',name:'Sacrum',latin:'Os sacrum',section:'Spine'},
+  {id:'b055',kind:'bone',name:'Coccyx',latin:'Os coccygis',section:'Spine'},
+  {id:'b056',kind:'bone',name:'Sternum',latin:'Sternum',section:'Thorax'},
+  {id:'b057',kind:'bone',name:'Left Rib 1',latin:'Costa 1',section:'Thorax'},
+  {id:'b058',kind:'bone',name:'Right Rib 1',latin:'Costa 1',section:'Thorax'},
+  {id:'b059',kind:'bone',name:'Left Rib 2',latin:'Costa 2',section:'Thorax'},
+  {id:'b060',kind:'bone',name:'Right Rib 2',latin:'Costa 2',section:'Thorax'},
+  {id:'b061',kind:'bone',name:'Left Rib 3',latin:'Costa 3',section:'Thorax'},
+  {id:'b062',kind:'bone',name:'Right Rib 3',latin:'Costa 3',section:'Thorax'},
+  {id:'b063',kind:'bone',name:'Left Rib 4',latin:'Costa 4',section:'Thorax'},
+  {id:'b064',kind:'bone',name:'Right Rib 4',latin:'Costa 4',section:'Thorax'},
+  {id:'b065',kind:'bone',name:'Left Rib 5',latin:'Costa 5',section:'Thorax'},
+  {id:'b066',kind:'bone',name:'Right Rib 5',latin:'Costa 5',section:'Thorax'},
+  {id:'b067',kind:'bone',name:'Left Rib 6',latin:'Costa 6',section:'Thorax'},
+  {id:'b068',kind:'bone',name:'Right Rib 6',latin:'Costa 6',section:'Thorax'},
+  {id:'b069',kind:'bone',name:'Left Rib 7',latin:'Costa 7',section:'Thorax'},
+  {id:'b070',kind:'bone',name:'Right Rib 7',latin:'Costa 7',section:'Thorax'},
+  {id:'b071',kind:'bone',name:'Left Rib 8',latin:'Costa 8',section:'Thorax'},
+  {id:'b072',kind:'bone',name:'Right Rib 8',latin:'Costa 8',section:'Thorax'},
+  {id:'b073',kind:'bone',name:'Left Rib 9',latin:'Costa 9',section:'Thorax'},
+  {id:'b074',kind:'bone',name:'Right Rib 9',latin:'Costa 9',section:'Thorax'},
+  {id:'b075',kind:'bone',name:'Left Rib 10',latin:'Costa 10',section:'Thorax'},
+  {id:'b076',kind:'bone',name:'Right Rib 10',latin:'Costa 10',section:'Thorax'},
+  {id:'b077',kind:'bone',name:'Left Rib 11',latin:'Costa 11',section:'Thorax'},
+  {id:'b078',kind:'bone',name:'Right Rib 11',latin:'Costa 11',section:'Thorax'},
+  {id:'b079',kind:'bone',name:'Left Rib 12',latin:'Costa 12',section:'Thorax'},
+  {id:'b080',kind:'bone',name:'Right Rib 12',latin:'Costa 12',section:'Thorax'},
+  {id:'b081',kind:'bone',name:'Left Clavicle',latin:'Clavicula',section:'Shoulder girdle'},
+  {id:'b082',kind:'bone',name:'Right Clavicle',latin:'Clavicula',section:'Shoulder girdle'},
+  {id:'b083',kind:'bone',name:'Left Scapula',latin:'Scapula',section:'Shoulder girdle'},
+  {id:'b084',kind:'bone',name:'Right Scapula',latin:'Scapula',section:'Shoulder girdle'},
+  {id:'b085',kind:'bone',name:'Left Humerus',latin:'Humerus',section:'Upper arm'},
+  {id:'b086',kind:'bone',name:'Right Humerus',latin:'Humerus',section:'Upper arm'},
+  {id:'b087',kind:'bone',name:'Left Radius',latin:'Radius',section:'Forearm'},
+  {id:'b088',kind:'bone',name:'Right Radius',latin:'Radius',section:'Forearm'},
+  {id:'b089',kind:'bone',name:'Left Ulna',latin:'Ulna',section:'Forearm'},
+  {id:'b090',kind:'bone',name:'Right Ulna',latin:'Ulna',section:'Forearm'},
+  {id:'b091',kind:'bone',name:'Left Scaphoid',latin:'Os scaphoideum',section:'Hand'},
+  {id:'b092',kind:'bone',name:'Right Scaphoid',latin:'Os scaphoideum',section:'Hand'},
+  {id:'b093',kind:'bone',name:'Left Lunate',latin:'Os lunatum',section:'Hand'},
+  {id:'b094',kind:'bone',name:'Right Lunate',latin:'Os lunatum',section:'Hand'},
+  {id:'b095',kind:'bone',name:'Left Triquetrum',latin:'Os triquetrum',section:'Hand'},
+  {id:'b096',kind:'bone',name:'Right Triquetrum',latin:'Os triquetrum',section:'Hand'},
+  {id:'b097',kind:'bone',name:'Left Pisiform',latin:'Os pisiforme',section:'Hand'},
+  {id:'b098',kind:'bone',name:'Right Pisiform',latin:'Os pisiforme',section:'Hand'},
+  {id:'b099',kind:'bone',name:'Left Trapezium',latin:'Os trapezium',section:'Hand'},
+  {id:'b100',kind:'bone',name:'Right Trapezium',latin:'Os trapezium',section:'Hand'},
+  {id:'b101',kind:'bone',name:'Left Trapezoid',latin:'Os trapezoideum',section:'Hand'},
+  {id:'b102',kind:'bone',name:'Right Trapezoid',latin:'Os trapezoideum',section:'Hand'},
+  {id:'b103',kind:'bone',name:'Left Capitate',latin:'Os capitatum',section:'Hand'},
+  {id:'b104',kind:'bone',name:'Right Capitate',latin:'Os capitatum',section:'Hand'},
+  {id:'b105',kind:'bone',name:'Left Hamate',latin:'Os hamatum',section:'Hand'},
+  {id:'b106',kind:'bone',name:'Right Hamate',latin:'Os hamatum',section:'Hand'},
+  {id:'b107',kind:'bone',name:'Left Metacarpal 1',latin:'Os metacarpale 1',section:'Hand'},
+  {id:'b108',kind:'bone',name:'Right Metacarpal 1',latin:'Os metacarpale 1',section:'Hand'},
+  {id:'b109',kind:'bone',name:'Left Metacarpal 2',latin:'Os metacarpale 2',section:'Hand'},
+  {id:'b110',kind:'bone',name:'Right Metacarpal 2',latin:'Os metacarpale 2',section:'Hand'},
+  {id:'b111',kind:'bone',name:'Left Metacarpal 3',latin:'Os metacarpale 3',section:'Hand'},
+  {id:'b112',kind:'bone',name:'Right Metacarpal 3',latin:'Os metacarpale 3',section:'Hand'},
+  {id:'b113',kind:'bone',name:'Left Metacarpal 4',latin:'Os metacarpale 4',section:'Hand'},
+  {id:'b114',kind:'bone',name:'Right Metacarpal 4',latin:'Os metacarpale 4',section:'Hand'},
+  {id:'b115',kind:'bone',name:'Left Metacarpal 5',latin:'Os metacarpale 5',section:'Hand'},
+  {id:'b116',kind:'bone',name:'Right Metacarpal 5',latin:'Os metacarpale 5',section:'Hand'},
+  {id:'b117',kind:'bone',name:'Left proximal phalanx of thumb',latin:'Phalanx proximalis digiti 1',section:'Hand'},
+  {id:'b118',kind:'bone',name:'Left distal phalanx of thumb',latin:'Phalanx distalis digiti 1',section:'Hand'},
+  {id:'b119',kind:'bone',name:'Left proximal phalanx of index',latin:'Phalanx proximalis digiti 2',section:'Hand'},
+  {id:'b120',kind:'bone',name:'Left middle phalanx of index',latin:'Phalanx media digiti 2',section:'Hand'},
+  {id:'b121',kind:'bone',name:'Left distal phalanx of index',latin:'Phalanx distalis digiti 2',section:'Hand'},
+  {id:'b122',kind:'bone',name:'Left proximal phalanx of middle',latin:'Phalanx proximalis digiti 3',section:'Hand'},
+  {id:'b123',kind:'bone',name:'Left middle phalanx of middle',latin:'Phalanx media digiti 3',section:'Hand'},
+  {id:'b124',kind:'bone',name:'Left distal phalanx of middle',latin:'Phalanx distalis digiti 3',section:'Hand'},
+  {id:'b125',kind:'bone',name:'Left proximal phalanx of ring',latin:'Phalanx proximalis digiti 4',section:'Hand'},
+  {id:'b126',kind:'bone',name:'Left middle phalanx of ring',latin:'Phalanx media digiti 4',section:'Hand'},
+  {id:'b127',kind:'bone',name:'Left distal phalanx of ring',latin:'Phalanx distalis digiti 4',section:'Hand'},
+  {id:'b128',kind:'bone',name:'Left proximal phalanx of little',latin:'Phalanx proximalis digiti 5',section:'Hand'},
+  {id:'b129',kind:'bone',name:'Left middle phalanx of little',latin:'Phalanx media digiti 5',section:'Hand'},
+  {id:'b130',kind:'bone',name:'Left distal phalanx of little',latin:'Phalanx distalis digiti 5',section:'Hand'},
+  {id:'b131',kind:'bone',name:'Right proximal phalanx of thumb',latin:'Phalanx proximalis digiti 1',section:'Hand'},
+  {id:'b132',kind:'bone',name:'Right distal phalanx of thumb',latin:'Phalanx distalis digiti 1',section:'Hand'},
+  {id:'b133',kind:'bone',name:'Right proximal phalanx of index',latin:'Phalanx proximalis digiti 2',section:'Hand'},
+  {id:'b134',kind:'bone',name:'Right middle phalanx of index',latin:'Phalanx media digiti 2',section:'Hand'},
+  {id:'b135',kind:'bone',name:'Right distal phalanx of index',latin:'Phalanx distalis digiti 2',section:'Hand'},
+  {id:'b136',kind:'bone',name:'Right proximal phalanx of middle',latin:'Phalanx proximalis digiti 3',section:'Hand'},
+  {id:'b137',kind:'bone',name:'Right middle phalanx of middle',latin:'Phalanx media digiti 3',section:'Hand'},
+  {id:'b138',kind:'bone',name:'Right distal phalanx of middle',latin:'Phalanx distalis digiti 3',section:'Hand'},
+  {id:'b139',kind:'bone',name:'Right proximal phalanx of ring',latin:'Phalanx proximalis digiti 4',section:'Hand'},
+  {id:'b140',kind:'bone',name:'Right middle phalanx of ring',latin:'Phalanx media digiti 4',section:'Hand'},
+  {id:'b141',kind:'bone',name:'Right distal phalanx of ring',latin:'Phalanx distalis digiti 4',section:'Hand'},
+  {id:'b142',kind:'bone',name:'Right proximal phalanx of little',latin:'Phalanx proximalis digiti 5',section:'Hand'},
+  {id:'b143',kind:'bone',name:'Right middle phalanx of little',latin:'Phalanx media digiti 5',section:'Hand'},
+  {id:'b144',kind:'bone',name:'Right distal phalanx of little',latin:'Phalanx distalis digiti 5',section:'Hand'},
+  {id:'b145',kind:'bone',name:'Left Hip bone (os coxae)',latin:'Os coxae',section:'Pelvis'},
+  {id:'b146',kind:'bone',name:'Right Hip bone (os coxae)',latin:'Os coxae',section:'Pelvis'},
+  {id:'b147',kind:'bone',name:'Left Femur',latin:'Femur',section:'Thigh'},
+  {id:'b148',kind:'bone',name:'Right Femur',latin:'Femur',section:'Thigh'},
+  {id:'b149',kind:'bone',name:'Left Patella',latin:'Patella',section:'Thigh'},
+  {id:'b150',kind:'bone',name:'Right Patella',latin:'Patella',section:'Thigh'},
+  {id:'b151',kind:'bone',name:'Left Tibia',latin:'Tibia',section:'Lower leg'},
+  {id:'b152',kind:'bone',name:'Right Tibia',latin:'Tibia',section:'Lower leg'},
+  {id:'b153',kind:'bone',name:'Left Fibula',latin:'Fibula',section:'Lower leg'},
+  {id:'b154',kind:'bone',name:'Right Fibula',latin:'Fibula',section:'Lower leg'},
+  {id:'b155',kind:'bone',name:'Left Talus',latin:'Talus',section:'Foot'},
+  {id:'b156',kind:'bone',name:'Right Talus',latin:'Talus',section:'Foot'},
+  {id:'b157',kind:'bone',name:'Left Calcaneus',latin:'Calcaneus',section:'Foot'},
+  {id:'b158',kind:'bone',name:'Right Calcaneus',latin:'Calcaneus',section:'Foot'},
+  {id:'b159',kind:'bone',name:'Left Navicular',latin:'Os naviculare',section:'Foot'},
+  {id:'b160',kind:'bone',name:'Right Navicular',latin:'Os naviculare',section:'Foot'},
+  {id:'b161',kind:'bone',name:'Left Medial cuneiform',latin:'Os cuneiforme mediale',section:'Foot'},
+  {id:'b162',kind:'bone',name:'Right Medial cuneiform',latin:'Os cuneiforme mediale',section:'Foot'},
+  {id:'b163',kind:'bone',name:'Left Intermediate cuneiform',latin:'Os cuneiforme intermedium',section:'Foot'},
+  {id:'b164',kind:'bone',name:'Right Intermediate cuneiform',latin:'Os cuneiforme intermedium',section:'Foot'},
+  {id:'b165',kind:'bone',name:'Left Lateral cuneiform',latin:'Os cuneiforme laterale',section:'Foot'},
+  {id:'b166',kind:'bone',name:'Right Lateral cuneiform',latin:'Os cuneiforme laterale',section:'Foot'},
+  {id:'b167',kind:'bone',name:'Left Cuboid',latin:'Os cuboideum',section:'Foot'},
+  {id:'b168',kind:'bone',name:'Right Cuboid',latin:'Os cuboideum',section:'Foot'},
+  {id:'b169',kind:'bone',name:'Left Metatarsal 1',latin:'Os metatarsale 1',section:'Foot'},
+  {id:'b170',kind:'bone',name:'Right Metatarsal 1',latin:'Os metatarsale 1',section:'Foot'},
+  {id:'b171',kind:'bone',name:'Left Metatarsal 2',latin:'Os metatarsale 2',section:'Foot'},
+  {id:'b172',kind:'bone',name:'Right Metatarsal 2',latin:'Os metatarsale 2',section:'Foot'},
+  {id:'b173',kind:'bone',name:'Left Metatarsal 3',latin:'Os metatarsale 3',section:'Foot'},
+  {id:'b174',kind:'bone',name:'Right Metatarsal 3',latin:'Os metatarsale 3',section:'Foot'},
+  {id:'b175',kind:'bone',name:'Left Metatarsal 4',latin:'Os metatarsale 4',section:'Foot'},
+  {id:'b176',kind:'bone',name:'Right Metatarsal 4',latin:'Os metatarsale 4',section:'Foot'},
+  {id:'b177',kind:'bone',name:'Left Metatarsal 5',latin:'Os metatarsale 5',section:'Foot'},
+  {id:'b178',kind:'bone',name:'Right Metatarsal 5',latin:'Os metatarsale 5',section:'Foot'},
+  {id:'b179',kind:'bone',name:'Left proximal phalanx of great toe',latin:'Phalanx proximalis digiti pedis 1',section:'Foot'},
+  {id:'b180',kind:'bone',name:'Left distal phalanx of great toe',latin:'Phalanx distalis digiti pedis 1',section:'Foot'},
+  {id:'b181',kind:'bone',name:'Left proximal phalanx of second toe',latin:'Phalanx proximalis digiti pedis 2',section:'Foot'},
+  {id:'b182',kind:'bone',name:'Left middle phalanx of second toe',latin:'Phalanx media digiti pedis 2',section:'Foot'},
+  {id:'b183',kind:'bone',name:'Left distal phalanx of second toe',latin:'Phalanx distalis digiti pedis 2',section:'Foot'},
+  {id:'b184',kind:'bone',name:'Left proximal phalanx of third toe',latin:'Phalanx proximalis digiti pedis 3',section:'Foot'},
+  {id:'b185',kind:'bone',name:'Left middle phalanx of third toe',latin:'Phalanx media digiti pedis 3',section:'Foot'},
+  {id:'b186',kind:'bone',name:'Left distal phalanx of third toe',latin:'Phalanx distalis digiti pedis 3',section:'Foot'},
+  {id:'b187',kind:'bone',name:'Left proximal phalanx of fourth toe',latin:'Phalanx proximalis digiti pedis 4',section:'Foot'},
+  {id:'b188',kind:'bone',name:'Left middle phalanx of fourth toe',latin:'Phalanx media digiti pedis 4',section:'Foot'},
+  {id:'b189',kind:'bone',name:'Left distal phalanx of fourth toe',latin:'Phalanx distalis digiti pedis 4',section:'Foot'},
+  {id:'b190',kind:'bone',name:'Left proximal phalanx of fifth toe',latin:'Phalanx proximalis digiti pedis 5',section:'Foot'},
+  {id:'b191',kind:'bone',name:'Left middle phalanx of fifth toe',latin:'Phalanx media digiti pedis 5',section:'Foot'},
+  {id:'b192',kind:'bone',name:'Left distal phalanx of fifth toe',latin:'Phalanx distalis digiti pedis 5',section:'Foot'},
+  {id:'b193',kind:'bone',name:'Right proximal phalanx of great toe',latin:'Phalanx proximalis digiti pedis 1',section:'Foot'},
+  {id:'b194',kind:'bone',name:'Right distal phalanx of great toe',latin:'Phalanx distalis digiti pedis 1',section:'Foot'},
+  {id:'b195',kind:'bone',name:'Right proximal phalanx of second toe',latin:'Phalanx proximalis digiti pedis 2',section:'Foot'},
+  {id:'b196',kind:'bone',name:'Right middle phalanx of second toe',latin:'Phalanx media digiti pedis 2',section:'Foot'},
+  {id:'b197',kind:'bone',name:'Right distal phalanx of second toe',latin:'Phalanx distalis digiti pedis 2',section:'Foot'},
+  {id:'b198',kind:'bone',name:'Right proximal phalanx of third toe',latin:'Phalanx proximalis digiti pedis 3',section:'Foot'},
+  {id:'b199',kind:'bone',name:'Right middle phalanx of third toe',latin:'Phalanx media digiti pedis 3',section:'Foot'},
+  {id:'b200',kind:'bone',name:'Right distal phalanx of third toe',latin:'Phalanx distalis digiti pedis 3',section:'Foot'},
+  {id:'b201',kind:'bone',name:'Right proximal phalanx of fourth toe',latin:'Phalanx proximalis digiti pedis 4',section:'Foot'},
+  {id:'b202',kind:'bone',name:'Right middle phalanx of fourth toe',latin:'Phalanx media digiti pedis 4',section:'Foot'},
+  {id:'b203',kind:'bone',name:'Right distal phalanx of fourth toe',latin:'Phalanx distalis digiti pedis 4',section:'Foot'},
+  {id:'b204',kind:'bone',name:'Right proximal phalanx of fifth toe',latin:'Phalanx proximalis digiti pedis 5',section:'Foot'},
+  {id:'b205',kind:'bone',name:'Right middle phalanx of fifth toe',latin:'Phalanx media digiti pedis 5',section:'Foot'},
+  {id:'b206',kind:'bone',name:'Right distal phalanx of fifth toe',latin:'Phalanx distalis digiti pedis 5',section:'Foot'},
+  {id:'m001',kind:'muscle',name:'Frontalis',latin:'Venter frontalis',section:'Head/neck muscles',origin:'Galea aponeurotica',insertion:'Skin of eyebrows and forehead',action:'Raises eyebrows; wrinkles forehead'},
+  {id:'m002',kind:'muscle',name:'Orbicularis oculi',latin:'Musculus orbicularis oculi',section:'Head/neck muscles',origin:'Medial orbital margin',insertion:'Skin around orbit',action:'Closes eyelids'},
+  {id:'m003',kind:'muscle',name:'Orbicularis oris',latin:'Musculus orbicularis oris',section:'Head/neck muscles',origin:'Maxilla and mandible around mouth',insertion:'Skin and mucosa of lips',action:'Closes and protrudes lips'},
+  {id:'m004',kind:'muscle',name:'Masseter',latin:'Musculus masseter',section:'Head/neck muscles',origin:'Zygomatic arch',insertion:'Angle and ramus of mandible',action:'Elevates mandible'},
+  {id:'m005',kind:'muscle',name:'Temporalis',latin:'Musculus temporalis',section:'Head/neck muscles',origin:'Temporal fossa',insertion:'Coronoid process of mandible',action:'Elevates and retracts mandible'},
+  {id:'m006',kind:'muscle',name:'Sternocleidomastoid',latin:'Musculus sternocleidomastoideus',section:'Head/neck muscles',origin:'Manubrium and medial clavicle',insertion:'Mastoid process',action:'Flexes neck; rotates head contralaterally'},
+  {id:'m007',kind:'muscle',name:'Platysma',latin:'Platysma',section:'Head/neck muscles',origin:'Fascia over pectoralis major and deltoid',insertion:'Mandible and skin of lower face',action:'Tenses neck skin; depresses mandible'},
+  {id:'m008',kind:'muscle',name:'Scalenes',latin:'Musculi scaleni',section:'Head/neck muscles',origin:'Cervical transverse processes',insertion:'First and second ribs',action:'Flex neck; elevate ribs during inspiration'},
+  {id:'m009',kind:'muscle',name:'Splenius capitis',latin:'Musculus splenius capitis',section:'Head/neck muscles',origin:'Nuchal ligament and upper thoracic spinous processes',insertion:'Mastoid process and superior nuchal line',action:'Extends and ipsilaterally rotates head'},
+  {id:'m010',kind:'muscle',name:'Levator scapulae',latin:'Musculus levator scapulae',section:'Head/neck muscles',origin:'C1-C4 transverse processes',insertion:'Medial border of scapula',action:'Elevates and downwardly rotates scapula'},
+  {id:'m011',kind:'muscle',name:'Trapezius',latin:'Musculus trapezius',section:'Back muscles',origin:'Occiput, nuchal ligament, C7-T12 spinous processes',insertion:'Clavicle, acromion, scapular spine',action:'Elevates, retracts, depresses, and upwardly rotates scapula'},
+  {id:'m012',kind:'muscle',name:'Latissimus dorsi',latin:'Musculus latissimus dorsi',section:'Back muscles',origin:'T7-L5 spinous processes, thoracolumbar fascia, iliac crest',insertion:'Intertubercular sulcus of humerus',action:'Extends, adducts, and medially rotates humerus'},
+  {id:'m013',kind:'muscle',name:'Rhomboid major',latin:'Musculus rhomboideus major',section:'Back muscles',origin:'T2-T5 spinous processes',insertion:'Medial border of scapula',action:'Retracts and downwardly rotates scapula'},
+  {id:'m014',kind:'muscle',name:'Rhomboid minor',latin:'Musculus rhomboideus minor',section:'Back muscles',origin:'C7-T1 spinous processes',insertion:'Medial end of scapular spine',action:'Retracts and downwardly rotates scapula'},
+  {id:'m015',kind:'muscle',name:'Erector spinae',latin:'Musculus erector spinae',section:'Back muscles',origin:'Posterior iliac crest, sacrum, lumbar spinous processes',insertion:'Ribs and vertebral processes; skull',action:'Extends and laterally flexes vertebral column'},
+  {id:'m016',kind:'muscle',name:'Multifidus',latin:'Musculus multifidus',section:'Back muscles',origin:'Sacrum and transverse processes',insertion:'Spinous processes 2-4 levels superior',action:'Stabilizes and extends vertebral column'},
+  {id:'m017',kind:'muscle',name:'Quadratus lumborum',latin:'Musculus quadratus lumborum',section:'Back muscles',origin:'Iliac crest',insertion:'12th rib and L1-L4 transverse processes',action:'Laterally flexes trunk; fixes 12th rib'},
+  {id:'m018',kind:'muscle',name:'Infraspinatus',latin:'Musculus infraspinatus',section:'Back muscles',origin:'Infraspinous fossa of scapula',insertion:'Greater tubercle of humerus',action:'Laterally rotates arm; stabilizes shoulder'},
+  {id:'m019',kind:'muscle',name:'Teres major',latin:'Musculus teres major',section:'Back muscles',origin:'Inferior angle of scapula',insertion:'Medial lip of intertubercular sulcus',action:'Adducts and medially rotates arm'},
+  {id:'m020',kind:'muscle',name:'Teres minor',latin:'Musculus teres minor',section:'Back muscles',origin:'Lateral border of scapula',insertion:'Greater tubercle of humerus',action:'Laterally rotates arm; stabilizes shoulder'},
+  {id:'m021',kind:'muscle',name:'Pectoralis major',latin:'Musculus pectoralis major',section:'Chest/abdominal muscles',origin:'Clavicle, sternum, costal cartilages',insertion:'Lateral lip of intertubercular sulcus',action:'Adducts and medially rotates arm; clavicular head flexes arm'},
+  {id:'m022',kind:'muscle',name:'Pectoralis minor',latin:'Musculus pectoralis minor',section:'Chest/abdominal muscles',origin:'Ribs 3-5',insertion:'Coracoid process',action:'Protracts and depresses scapula'},
+  {id:'m023',kind:'muscle',name:'Serratus anterior',latin:'Musculus serratus anterior',section:'Chest/abdominal muscles',origin:'Ribs 1-8 or 9',insertion:'Anterior medial border of scapula',action:'Protracts and upwardly rotates scapula'},
+  {id:'m024',kind:'muscle',name:'Rectus abdominis',latin:'Musculus rectus abdominis',section:'Chest/abdominal muscles',origin:'Pubic crest and symphysis',insertion:'Xiphoid process and costal cartilages 5-7',action:'Flexes trunk; compresses abdomen'},
+  {id:'m025',kind:'muscle',name:'External oblique',latin:'Musculus obliquus externus abdominis',section:'Chest/abdominal muscles',origin:'Ribs 5-12',insertion:'Linea alba, pubic tubercle, iliac crest',action:'Compresses abdomen; flexes and contralaterally rotates trunk'},
+  {id:'m026',kind:'muscle',name:'Internal oblique',latin:'Musculus obliquus internus abdominis',section:'Chest/abdominal muscles',origin:'Thoracolumbar fascia, iliac crest, inguinal ligament',insertion:'Ribs 10-12 and linea alba',action:'Compresses abdomen; ipsilaterally rotates trunk'},
+  {id:'m027',kind:'muscle',name:'Transversus abdominis',latin:'Musculus transversus abdominis',section:'Chest/abdominal muscles',origin:'Costal cartilages 7-12, thoracolumbar fascia, iliac crest',insertion:'Linea alba and pubis',action:'Compresses abdominal contents'},
+  {id:'m028',kind:'muscle',name:'Diaphragm',latin:'Diaphragma',section:'Chest/abdominal muscles',origin:'Xiphoid, lower six ribs, upper lumbar vertebrae',insertion:'Central tendon',action:'Primary muscle of inspiration'},
+  {id:'m029',kind:'muscle',name:'External intercostals',latin:'Musculi intercostales externi',section:'Chest/abdominal muscles',origin:'Inferior border of rib above',insertion:'Superior border of rib below',action:'Elevate ribs during inspiration'},
+  {id:'m030',kind:'muscle',name:'Deltoid',latin:'Musculus deltoideus',section:'Shoulder/arm muscles',origin:'Lateral clavicle, acromion, scapular spine',insertion:'Deltoid tuberosity',action:'Abducts arm; anterior fibers flex and medially rotate; posterior fibers extend and laterally rotate'},
+  {id:'m031',kind:'muscle',name:'Supraspinatus',latin:'Musculus supraspinatus',section:'Shoulder/arm muscles',origin:'Supraspinous fossa',insertion:'Greater tubercle of humerus',action:'Initiates arm abduction; stabilizes shoulder'},
+  {id:'m032',kind:'muscle',name:'Subscapularis',latin:'Musculus subscapularis',section:'Shoulder/arm muscles',origin:'Subscapular fossa',insertion:'Lesser tubercle of humerus',action:'Medially rotates arm; stabilizes shoulder'},
+  {id:'m033',kind:'muscle',name:'Biceps brachii',latin:'Musculus biceps brachii',section:'Shoulder/arm muscles',origin:'Supraglenoid tubercle and coracoid process',insertion:'Radial tuberosity and bicipital aponeurosis',action:'Supinates forearm and flexes elbow'},
+  {id:'m034',kind:'muscle',name:'Brachialis',latin:'Musculus brachialis',section:'Shoulder/arm muscles',origin:'Distal anterior humerus',insertion:'Ulnar tuberosity and coronoid process',action:'Primary elbow flexor'},
+  {id:'m035',kind:'muscle',name:'Coracobrachialis',latin:'Musculus coracobrachialis',section:'Shoulder/arm muscles',origin:'Coracoid process',insertion:'Medial midshaft humerus',action:'Flexes and adducts arm'},
+  {id:'m036',kind:'muscle',name:'Triceps brachii',latin:'Musculus triceps brachii',section:'Shoulder/arm muscles',origin:'Infraglenoid tubercle and posterior humerus',insertion:'Olecranon of ulna',action:'Extends elbow; long head extends/adducts arm'},
+  {id:'m037',kind:'muscle',name:'Brachioradialis',latin:'Musculus brachioradialis',section:'Shoulder/arm muscles',origin:'Lateral supracondylar ridge',insertion:'Distal radius near styloid process',action:'Flexes elbow in neutral forearm position'},
+  {id:'m038',kind:'muscle',name:'Pronator teres',latin:'Musculus pronator teres',section:'Shoulder/arm muscles',origin:'Medial epicondyle and coronoid process',insertion:'Lateral radius',action:'Pronates forearm; weak elbow flexion'},
+  {id:'m039',kind:'muscle',name:'Supinator',latin:'Musculus supinator',section:'Shoulder/arm muscles',origin:'Lateral epicondyle, annular ligament, proximal ulna',insertion:'Proximal radius',action:'Supinates forearm'},
+  {id:'m040',kind:'muscle',name:'Flexor carpi radialis',latin:'Musculus flexor carpi radialis',section:'Shoulder/arm muscles',origin:'Medial epicondyle',insertion:'Bases of metacarpals 2-3',action:'Flexes and abducts wrist'},
+  {id:'m041',kind:'muscle',name:'Flexor carpi ulnaris',latin:'Musculus flexor carpi ulnaris',section:'Shoulder/arm muscles',origin:'Medial epicondyle, olecranon, ulna',insertion:'Pisiform, hamate, fifth metacarpal',action:'Flexes and adducts wrist'},
+  {id:'m042',kind:'muscle',name:'Palmaris longus',latin:'Musculus palmaris longus',section:'Shoulder/arm muscles',origin:'Medial epicondyle',insertion:'Palmar aponeurosis',action:'Flexes wrist; tenses palmar aponeurosis'},
+  {id:'m043',kind:'muscle',name:'Extensor digitorum',latin:'Musculus extensor digitorum',section:'Shoulder/arm muscles',origin:'Lateral epicondyle',insertion:'Extensor expansions of digits 2-5',action:'Extends fingers and wrist'},
+  {id:'m044',kind:'muscle',name:'Extensor carpi radialis longus',latin:'Musculus extensor carpi radialis longus',section:'Shoulder/arm muscles',origin:'Lateral supracondylar ridge',insertion:'Base of second metacarpal',action:'Extends and abducts wrist'},
+  {id:'m045',kind:'muscle',name:'Extensor carpi ulnaris',latin:'Musculus extensor carpi ulnaris',section:'Shoulder/arm muscles',origin:'Lateral epicondyle and posterior ulna',insertion:'Base of fifth metacarpal',action:'Extends and adducts wrist'},
+  {id:'m046',kind:'muscle',name:'Gluteus maximus',latin:'Musculus gluteus maximus',section:'Hip/thigh muscles',origin:'Posterior ilium, sacrum, coccyx',insertion:'Iliotibial tract and gluteal tuberosity',action:'Extends and laterally rotates hip'},
+  {id:'m047',kind:'muscle',name:'Gluteus medius',latin:'Musculus gluteus medius',section:'Hip/thigh muscles',origin:'External ilium',insertion:'Greater trochanter',action:'Abducts and medially rotates thigh; stabilizes pelvis'},
+  {id:'m048',kind:'muscle',name:'Gluteus minimus',latin:'Musculus gluteus minimus',section:'Hip/thigh muscles',origin:'External ilium',insertion:'Greater trochanter',action:'Abducts and medially rotates thigh'},
+  {id:'m049',kind:'muscle',name:'Tensor fasciae latae',latin:'Musculus tensor fasciae latae',section:'Hip/thigh muscles',origin:'ASIS and anterior iliac crest',insertion:'Iliotibial tract',action:'Flexes, abducts, and medially rotates hip; stabilizes knee'},
+  {id:'m050',kind:'muscle',name:'Iliopsoas',latin:'Iliacus + psoas major',section:'Hip/thigh muscles',origin:'Iliac fossa and T12-L5 vertebrae',insertion:'Lesser trochanter',action:'Powerful hip flexion'},
+  {id:'m051',kind:'muscle',name:'Sartorius',latin:'Musculus sartorius',section:'Hip/thigh muscles',origin:'ASIS',insertion:'Medial proximal tibia',action:'Flexes, abducts, and laterally rotates hip; flexes knee'},
+  {id:'m052',kind:'muscle',name:'Rectus femoris',latin:'Musculus rectus femoris',section:'Hip/thigh muscles',origin:'AIIS and superior acetabular rim',insertion:'Tibial tuberosity via patella',action:'Extends knee; flexes hip'},
+  {id:'m053',kind:'muscle',name:'Vastus lateralis',latin:'Musculus vastus lateralis',section:'Hip/thigh muscles',origin:'Greater trochanter and linea aspera',insertion:'Tibial tuberosity via patella',action:'Extends knee'},
+  {id:'m054',kind:'muscle',name:'Vastus medialis',latin:'Musculus vastus medialis',section:'Hip/thigh muscles',origin:'Intertrochanteric line and linea aspera',insertion:'Tibial tuberosity via patella',action:'Extends knee; stabilizes patella'},
+  {id:'m055',kind:'muscle',name:'Vastus intermedius',latin:'Musculus vastus intermedius',section:'Hip/thigh muscles',origin:'Anterior and lateral femoral shaft',insertion:'Tibial tuberosity via patella',action:'Extends knee'},
+  {id:'m056',kind:'muscle',name:'Biceps femoris',latin:'Musculus biceps femoris',section:'Hip/thigh muscles',origin:'Ischial tuberosity and linea aspera',insertion:'Head of fibula',action:'Flexes knee; laterally rotates flexed knee; long head extends hip'},
+  {id:'m057',kind:'muscle',name:'Semitendinosus',latin:'Musculus semitendinosus',section:'Hip/thigh muscles',origin:'Ischial tuberosity',insertion:'Medial proximal tibia',action:'Extends hip; flexes knee; medially rotates flexed knee'},
+  {id:'m058',kind:'muscle',name:'Semimembranosus',latin:'Musculus semimembranosus',section:'Hip/thigh muscles',origin:'Ischial tuberosity',insertion:'Posterior medial tibial condyle',action:'Extends hip; flexes knee; medially rotates flexed knee'},
+  {id:'m059',kind:'muscle',name:'Adductor longus',latin:'Musculus adductor longus',section:'Hip/thigh muscles',origin:'Body of pubis',insertion:'Middle linea aspera',action:'Adducts thigh'},
+  {id:'m060',kind:'muscle',name:'Adductor magnus',latin:'Musculus adductor magnus',section:'Hip/thigh muscles',origin:'Pubic/ischial rami and ischial tuberosity',insertion:'Linea aspera and adductor tubercle',action:'Adducts thigh; portions flex or extend hip'},
+  {id:'m061',kind:'muscle',name:'Gracilis',latin:'Musculus gracilis',section:'Hip/thigh muscles',origin:'Body and inferior ramus of pubis',insertion:'Medial proximal tibia',action:'Adducts thigh; flexes knee'},
+  {id:'m062',kind:'muscle',name:'Pectineus',latin:'Musculus pectineus',section:'Hip/thigh muscles',origin:'Superior ramus of pubis',insertion:'Pectineal line of femur',action:'Adducts and flexes thigh'},
+  {id:'m063',kind:'muscle',name:'Piriformis',latin:'Musculus piriformis',section:'Hip/thigh muscles',origin:'Anterior sacrum',insertion:'Greater trochanter',action:'Laterally rotates extended thigh; abducts flexed thigh'},
+  {id:'m064',kind:'muscle',name:'Tibialis anterior',latin:'Musculus tibialis anterior',section:'Lower leg muscles',origin:'Lateral condyle and lateral tibia',insertion:'Medial cuneiform and first metatarsal',action:'Dorsiflexes and inverts foot'},
+  {id:'m065',kind:'muscle',name:'Extensor hallucis longus',latin:'Musculus extensor hallucis longus',section:'Lower leg muscles',origin:'Anterior fibula',insertion:'Distal phalanx of great toe',action:'Extends great toe; dorsiflexes ankle'},
+  {id:'m066',kind:'muscle',name:'Extensor digitorum longus',latin:'Musculus extensor digitorum longus',section:'Lower leg muscles',origin:'Lateral tibial condyle and anterior fibula',insertion:'Middle/distal phalanges of toes 2-5',action:'Extends toes 2-5; dorsiflexes ankle'},
+  {id:'m067',kind:'muscle',name:'Fibularis longus',latin:'Musculus fibularis longus',section:'Lower leg muscles',origin:'Head and superior lateral fibula',insertion:'Base of first metatarsal and medial cuneiform',action:'Everts and plantarflexes foot'},
+  {id:'m068',kind:'muscle',name:'Fibularis brevis',latin:'Musculus fibularis brevis',section:'Lower leg muscles',origin:'Inferior lateral fibula',insertion:'Base of fifth metatarsal',action:'Everts and plantarflexes foot'},
+  {id:'m069',kind:'muscle',name:'Gastrocnemius',latin:'Musculus gastrocnemius',section:'Lower leg muscles',origin:'Femoral condyles',insertion:'Calcaneus via Achilles tendon',action:'Plantarflexes ankle; flexes knee'},
+  {id:'m070',kind:'muscle',name:'Soleus',latin:'Musculus soleus',section:'Lower leg muscles',origin:'Posterior fibular head and soleal line of tibia',insertion:'Calcaneus via Achilles tendon',action:'Plantarflexes ankle; postural muscle'},
+  {id:'m071',kind:'muscle',name:'Plantaris',latin:'Musculus plantaris',section:'Lower leg muscles',origin:'Lateral supracondylar line of femur',insertion:'Calcaneus',action:'Weak plantarflexion and knee flexion'},
+  {id:'m072',kind:'muscle',name:'Popliteus',latin:'Musculus popliteus',section:'Lower leg muscles',origin:'Lateral femoral condyle',insertion:'Posterior proximal tibia',action:'Unlocks knee; weak knee flexion'},
+  {id:'m073',kind:'muscle',name:'Tibialis posterior',latin:'Musculus tibialis posterior',section:'Lower leg muscles',origin:'Posterior tibia, fibula, interosseous membrane',insertion:'Navicular and multiple tarsals/metatarsals',action:'Plantarflexes and inverts foot; supports arch'},
+  {id:'m074',kind:'muscle',name:'Flexor hallucis longus',latin:'Musculus flexor hallucis longus',section:'Lower leg muscles',origin:'Posterior fibula',insertion:'Distal phalanx of great toe',action:'Flexes great toe; plantarflexes ankle'},
+  {id:'m075',kind:'muscle',name:'Flexor digitorum longus',latin:'Musculus flexor digitorum longus',section:'Lower leg muscles',origin:'Posterior tibia',insertion:'Distal phalanges of toes 2-5',action:'Flexes toes 2-5; plantarflexes ankle'}
+];
+
+// Mesh-name -> anatomy-name aliases for imported GLB models.
+// Add your model's exact mesh names here; matching also tries id/name/Latin automatically.
+const MESH_NAME_MAP = {
+  'Humerus_L':'Left Humerus','Humerus_R':'Right Humerus','Femur_L':'Left Femur','Femur_R':'Right Femur',
+  'Tibia_L':'Left Tibia','Tibia_R':'Right Tibia','Fibula_L':'Left Fibula','Fibula_R':'Right Fibula',
+  'Clavicle_L':'Left Clavicle','Clavicle_R':'Right Clavicle','Scapula_L':'Left Scapula','Scapula_R':'Right Scapula',
+  'Biceps_Brachii':'Biceps brachii','Triceps_Brachii':'Triceps brachii','Deltoid':'Deltoid','Pectoralis_Major':'Pectoralis major',
+  'Latissimus_Dorsi':'Latissimus dorsi','Rectus_Abdominis':'Rectus abdominis','Gluteus_Maximus':'Gluteus maximus','Gastrocnemius':'Gastrocnemius'
+};
+
+const SECTIONS=[...new Set(STRUCTURES.map(s=>s.section))];
+const byId=new Map(STRUCTURES.map(s=>[s.id,s]));
+const norm=s=>String(s||'').toLowerCase().replace(/left|right/g,m=>m).replace(/[^a-z0-9]+/g,' ').trim();
+const nameIndex=new Map(); STRUCTURES.forEach(s=>{[s.id,s.name,s.latin].forEach(k=>nameIndex.set(norm(k),s));});
+Object.entries(MESH_NAME_MAP).forEach(([mesh,aname])=>{const s=STRUCTURES.find(x=>x.name===aname);if(s)nameIndex.set(norm(mesh),s)});
+
+const $=id=>document.getElementById(id);
+const els={host:$('canvasHost'),layer:$('layerSelect'),mode:$('mode'),answerStyle:$('answerStyle'),kind:$('kindFilter'),count:$('questionCount'),chips:$('sectionChips'),score:$('score'),streak:$('streak'),qnum:$('qnum'),timer:$('timer'),prompt:$('prompt'),detail:$('questionDetail'),choices:$('choices'),typedWrap:$('typedWrap'),typed:$('typedAnswer'),feedback:$('feedback'),infoName:$('infoName'),infoLatin:$('infoLatin'),infoDetails:$('infoDetails'),modelStatus:$('modelStatus')};
+
+let scene,camera,renderer,controls,raycaster,pointer,world,fallbackRoot,importRoot;
+let structureMeshes=new Map(),pickables=[],selected=null,highlighted=null,layerMode='both',camTween=null,autoSpinUntil=0,lastTap=0;
+let quiz={active:false,queue:[],total:0,index:0,score:0,streak:0,current:null,missed:new Map(),seen:new Set(),answered:false,startTime:0,timerHandle:null,retryOnly:false};
+const progress=loadProgress();
+
+function loadProgress(){try{return JSON.parse(localStorage.getItem('anatomy3d-progress-v1'))||{}}catch(e){return {}}}
+function saveProgress(){try{localStorage.setItem('anatomy3d-progress-v1',JSON.stringify(progress))}catch(e){}}
+function recordAttempt(s,correct){const p=progress[s.id]||(progress[s.id]={attempts:0,correct:0,misses:0});p.attempts++; if(correct)p.correct++; else p.misses++; saveProgress();}
+function accuracy(s){const p=progress[s.id];return p&&p.attempts?p.correct/p.attempts:0}
+function weight(s){const p=progress[s.id]||{attempts:0,correct:0,misses:0};return 1+p.misses*3+Math.max(0,p.attempts-p.correct)*1.5+(p.attempts===0?2:0)}
+function weightedPick(arr){const total=arr.reduce((a,s)=>a+weight(s),0);let r=Math.random()*total;for(const s of arr){r-=weight(s);if(r<=0)return s}return arr[arr.length-1]}
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+function init3D(){
+  const errBox=$('renderError');
+  if(typeof THREE==='undefined'){
+    errBox.classList.remove('hidden');
+    errBox.innerHTML='<b>3D library did not load.</b><br>Open this downloaded HTML file in Safari/Chrome with an internet connection so the cdnjs Three.js script can load.';
+    els.modelStatus.textContent='3D library failed to load';
+    return;
+  }
+  try{
+    scene=new THREE.Scene(); scene.background=null;
+    camera=new THREE.PerspectiveCamera(42,1,.05,200); camera.position.set(0,.45,10.5);
+    renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2)); renderer.outputEncoding=THREE.sRGBEncoding; renderer.setClearColor(0x000000,0); els.host.appendChild(renderer.domElement);
+    if(typeof THREE.OrbitControls==='function'){
+      controls=new THREE.OrbitControls(camera,renderer.domElement); controls.enableDamping=true; controls.dampingFactor=.07; controls.screenSpacePanning=true; controls.minDistance=1; controls.maxDistance=30; controls.target.set(0,.1,0);
+      if(THREE.TOUCH) controls.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN};
+    }else{
+      controls=makeBasicControls(camera,renderer.domElement);
+      els.modelStatus.textContent='Fallback controls active';
+    }
+    raycaster=new THREE.Raycaster(); pointer=new THREE.Vector2(); world=new THREE.Group(); scene.add(world);
+    scene.add(new THREE.HemisphereLight(0xcde9ff,0x1d2638,1.3)); const key=new THREE.DirectionalLight(0xffffff,1.35);key.position.set(5,8,6);scene.add(key); const rim=new THREE.DirectionalLight(0x62e0ff,.75);rim.position.set(-5,2,-5);scene.add(rim);
+    buildFallback(); resize(); add3DEvents(); animate();
+  }catch(err){
+    console.error('3D startup failed:',err);
+    errBox.classList.remove('hidden');
+    errBox.innerHTML='<b>3D startup failed.</b><br>'+esc(err&&err.message?err.message:String(err))+'<br><span style="color:#94a3b8">Try opening the downloaded file directly in Safari/Chrome instead of the in-app preview.</span>';
+    els.modelStatus.textContent='3D startup error';
+  }
+}
+
+function makeBasicControls(cam,dom){
+  const c={target:new THREE.Vector3(0,.1,0),minDistance:1,maxDistance:30,autoRotate:false,autoRotateSpeed:4,enableDamping:false,dampingFactor:0,screenSpacePanning:true};
+  let theta=0,phi=Math.PI/2,radius=10.5,drag=false,lastX=0,lastY=0;
+  function sync(){const off=cam.position.clone().sub(c.target);radius=Math.max(.001,off.length());theta=Math.atan2(off.x,off.z);phi=Math.acos(Math.max(-1,Math.min(1,off.y/radius)));}
+  function apply(){phi=Math.max(.08,Math.min(Math.PI-.08,phi));radius=Math.max(c.minDistance,Math.min(c.maxDistance,radius));cam.position.set(c.target.x+radius*Math.sin(phi)*Math.sin(theta),c.target.y+radius*Math.cos(phi),c.target.z+radius*Math.sin(phi)*Math.cos(theta));cam.lookAt(c.target);}
+  sync();
+  dom.style.touchAction='none';
+  dom.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'&&e.isPrimary===false)return;drag=true;lastX=e.clientX;lastY=e.clientY;dom.setPointerCapture?.(e.pointerId)});
+  dom.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;theta-=dx*.008;phi+=dy*.008;apply()});
+  dom.addEventListener('pointerup',()=>drag=false); dom.addEventListener('pointercancel',()=>drag=false);
+  dom.addEventListener('wheel',e=>{e.preventDefault();radius*=Math.exp(e.deltaY*.0012);apply()},{passive:false});
+  let touches=[];
+  dom.addEventListener('touchstart',e=>{touches=[...e.touches].map(t=>({x:t.clientX,y:t.clientY}))},{passive:true});
+  dom.addEventListener('touchmove',e=>{if(e.touches.length===2&&touches.length===2){e.preventDefault();const a=[...e.touches],oldD=Math.hypot(touches[0].x-touches[1].x,touches[0].y-touches[1].y),newD=Math.hypot(a[0].clientX-a[1].clientX,a[0].clientY-a[1].clientY);if(oldD>1){radius*=oldD/newD;apply()}touches=a.map(t=>({x:t.clientX,y:t.clientY}))}},{passive:false});
+  c.update=()=>{if(c.autoRotate){theta+=c.autoRotateSpeed*.0007;apply()}else cam.lookAt(c.target)};
+  return c;
+}
+function resize(){const r=els.host.getBoundingClientRect();if(!r.width||!r.height)return;renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix()}
+window.addEventListener('resize',resize);
+
+function seeded(name){let h=2166136261;for(let i=0;i<name.length;i++){h^=name.charCodeAt(i);h=Math.imul(h,16777619)}return ()=>((h=Math.imul(h^h>>>15,2246822519))>>>0)/4294967295}
+function sideOf(name){if(/^Left /.test(name))return -1;if(/^Right /.test(name))return 1;return 0}
+function poseFor(s){
+  const r=seeded(s.name),side=sideOf(s.name),j=()=> (r()-.5); let x=side?side*.72:j()*.18,y=0,z=j()*.18,scale=[.16,.16,.16],rot=[0,0,0];
+  const n=s.name.toLowerCase();
+  const sectionBase={
+   'Skull & face':[0,3.38,0],'Spine':[0,1.5,.08],'Thorax':[0,1.85,0],'Shoulder girdle':[0,2.35,0],
+   'Upper arm':[0,1.65,0],'Forearm':[0,.85,0],'Hand':[0,.2,0],'Pelvis':[0,.15,0],'Thigh':[0,-.85,0],'Lower leg':[0,-2.05,0],'Foot':[0,-3.05,.18],
+   'Head/neck muscles':[0,3.05,.15],'Back muscles':[0,1.55,-.28],'Chest/abdominal muscles':[0,1.35,.27],'Shoulder/arm muscles':[0,1.35,.25],'Hip/thigh muscles':[0,-.7,.25],'Lower leg muscles':[0,-2.1,.18]
+  }[s.section]||[0,0,0]; [x,y,z]=[x+sectionBase[0],y+sectionBase[1],z+sectionBase[2]];
+  if(n.includes('vertebra')){const m=n.match(/(c|t|l)(\d+)/);if(m){const num=+m[2];y=m[1]=='c'?2.75-num*.12:m[1]=='t'?2.0-num*.145:.25-num*.17;x=0;z=.06;scale=[.22,.11,.16]}}
+  else if(n.includes('rib ')){const m=n.match(/rib (\d+)/);const k=m?+m[1]:6;y=2.45-k*.11;x=side*(.34+k*.035);z=.02;scale=[.5,.045,.18];rot=[0,0,side*.45]}
+  else if(n.includes('sternum')){x=0;y=1.85;z=.18;scale=[.13,.65,.08]}
+  else if(n.includes('clavicle')){x=side*.43;y=2.48;z=.1;scale=[.43,.07,.07];rot=[0,0,side*.18]}
+  else if(n.includes('scapula')){x=side*.48;y=2.12;z=-.2;scale=[.32,.42,.08]}
+  else if(n.includes('humerus')){x=side*.92;y=1.5;scale=[.1,.72,.1]}
+  else if(n.includes('radius')){x=side*1.0;y=.66;z=.1;scale=[.07,.62,.07]}
+  else if(n.includes('ulna')){x=side*.86;y=.66;z=-.04;scale=[.07,.66,.07]}
+  else if(n.includes('metacarpal')){const k=+(n.match(/(\d+)/)||[0,3])[1];x=side*(.78+k*.08);y=.03;z=(k-3)*.035;scale=[.035,.21,.035]}
+  else if(n.includes('phalanx') && s.section==='Hand'){const digit=['thumb','index','middle','ring','little'].findIndex(d=>n.includes(d))+1; x=side*(.8+digit*.09);y=-.15-(n.includes('distal')?.24:n.includes('middle')?.12:0);z=(digit-3)*.035;scale=[.032,.12,.032]}
+  else if(n.includes('hip bone')){x=side*.37;y=.06;z=0;scale=[.42,.42,.18]}
+  else if(n.includes('femur')){x=side*.43;y=-.88;scale=[.12,.9,.12]}
+  else if(n.includes('patella')){x=side*.43;y=-1.68;z=.18;scale=[.11,.14,.07]}
+  else if(n.includes('tibia')){x=side*.38;y=-2.33;scale=[.1,.72,.1]}
+  else if(n.includes('fibula')){x=side*.56;y=-2.33;scale=[.06,.72,.06]}
+  else if(n.includes('metatarsal')){const k=+(n.match(/(\d+)/)||[0,3])[1];x=side*(.27+k*.07);y=-3.12;z=.2+(k-3)*.03;scale=[.035,.035,.28];rot=[Math.PI/2,0,0]}
+  else if(n.includes('phalanx') && s.section==='Foot'){const labels=['great toe','second toe','third toe','fourth toe','fifth toe'];const d=labels.findIndex(v=>n.includes(v))+1;x=side*(.22+d*.075);y=-3.17;z=.55+(n.includes('distal')?.15:n.includes('middle')?.08:0);scale=[.03,.03,.1]}
+  else if(s.kind==='muscle'){
+    const spread=side|| (r()>.5?1:-1); if(['Shoulder/arm muscles'].includes(s.section)){x=spread*(.7+r()*.28);y=.65+r()*1.4;scale=[.16,.45,.13]}
+    if(s.section==='Hip/thigh muscles'){x=spread*(.3+r()*.25);y=-.25-r()*1.25;scale=[.2,.52,.16]}
+    if(s.section==='Lower leg muscles'){x=spread*(.34+r()*.2);y=-1.85-r()*.85;scale=[.14,.45,.12]}
+    if(s.section==='Chest/abdominal muscles'){x=j()*.45;y=.65+r()*1.5;z=.28;scale=[.28,.38,.11]}
+    if(s.section==='Back muscles'){x=j()*.45;y=.65+r()*1.65;z=-.28;scale=[.3,.42,.11]}
+    if(s.section==='Head/neck muscles'){x=j()*.34;y=2.65+r()*.85;z=.18*j();scale=[.18,.22,.12]}
+  } else {x+=j()*.22;y+=j()*.22;z+=j()*.12}
+  return {pos:[x,y,z],scale,rot};
+}
+function makePrimitive(s){
+  const p=poseFor(s); let g;
+  if(s.kind==='bone'){
+    if(s.section==='Skull & face')g=new THREE.SphereGeometry(1,14,10);
+    else if(/rib|clavicle|humerus|radius|ulna|femur|tibia|fibula|metacarpal|metatarsal|phalanx|vertebra/.test(s.name.toLowerCase()))g=new THREE.CylinderGeometry(.45,.5,2,10);
+    else g=new THREE.BoxGeometry(1.6,1.6,1);
+  }else g=new THREE.SphereGeometry(1,14,10);
+  const mat=new THREE.MeshStandardMaterial({color:s.kind==='bone'?0xe9e2c7:0xd66562,roughness:.62,metalness:.02,transparent:s.kind==='muscle',opacity:s.kind==='muscle'?.58:1,emissive:0x000000});
+  const m=new THREE.Mesh(g,mat);m.name=s.name;m.position.set(...p.pos);m.scale.set(...p.scale);m.rotation.set(...p.rot);m.userData.structureId=s.id;m.userData.baseOpacity=mat.opacity;m.userData.baseColor=mat.color.clone();m.userData.baseEmissive=mat.emissive.clone();return m;
+}
+function buildFallback(){
+  clearModel(); fallbackRoot=new THREE.Group(); fallbackRoot.name='Primitive anatomy fallback'; world.add(fallbackRoot); structureMeshes=new Map();pickables=[];
+  STRUCTURES.forEach(s=>{const m=makePrimitive(s);fallbackRoot.add(m);registerMesh(s,m)}); addBodyGuides(fallbackRoot);layerMode=els.layer.value;applyLayers();els.modelStatus.textContent=`Fallback model • ${STRUCTURES.length} named structures`; if(camera&&controls){camera.position.set(0,.35,10.5);controls.target.set(0,.1,0);controls.update();}
+}
+function addBodyGuides(root){
+  const mat=new THREE.MeshBasicMaterial({color:0x31415c,wireframe:true,transparent:true,opacity:.22,depthWrite:false});
+  const add=(geo,pos,scale,rot=[0,0,0])=>{const m=new THREE.Mesh(geo,mat);m.position.set(...pos);m.scale.set(...scale);m.rotation.set(...rot);m.userData.guide=true;root.add(m);return m};
+  add(new THREE.SphereGeometry(1,16,12),[0,3.32,0],[.47,.56,.43]);
+  add(new THREE.SphereGeometry(1,16,12),[0,1.35,0],[.76,1.22,.4]);
+  add(new THREE.SphereGeometry(1,16,12),[0,.05,0],[.58,.42,.35]);
+  const cyl=new THREE.CylinderGeometry(1,1,1,10);
+  add(cyl,[-.95,1.3,0],[.11,1.35,.11],[0,0,-.08]);add(cyl,[.95,1.3,0],[.11,1.35,.11],[0,0,.08]);
+  add(cyl,[-.43,-1.55,0],[.14,1.55,.14],[0,0,-.015]);add(cyl,[.43,-1.55,0],[.14,1.55,.14],[0,0,.015]);
+}
+function clearModel(){if(fallbackRoot){world.remove(fallbackRoot);disposeTree(fallbackRoot);fallbackRoot=null}if(importRoot){world.remove(importRoot);disposeTree(importRoot);importRoot=null}}
+function disposeTree(root){root.traverse(o=>{if(o.geometry)o.geometry.dispose?.();if(o.material){(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose?.())}})}
+function registerMesh(s,m){if(!structureMeshes.has(s.id))structureMeshes.set(s.id,[]);structureMeshes.get(s.id).push(m);pickables.push(m)}
+function applyLayers(){
+  for(const s of STRUCTURES){const visible=layerMode==='both'||layerMode===s.kind||s.id===highlighted?.id;const meshes=structureMeshes.get(s.id)||[];meshes.forEach(m=>{m.visible=visible;const mats=Array.isArray(m.material)?m.material:[m.material];mats.forEach(mat=>{if(!mat)return;const base=m.userData.baseOpacity??1;let op=base;if(highlighted&&highlighted.kind==='bone'&&s.kind==='muscle'&&s.id!==highlighted.id)op=Math.min(op,.08);if(highlighted&&highlighted.kind==='muscle'&&s.kind==='bone')op=Math.min(op,.3);mat.transparent=op<1||s.kind==='muscle';mat.opacity=op;mat.depthWrite=op>.25})})}
+}
+function setHighlight(s){if(highlighted)paintHighlight(highlighted,false);highlighted=s||null;if(highlighted){paintHighlight(highlighted,true);applyLayers();focusStructure(highlighted,true)}else applyLayers()}
+function paintHighlight(s,on){(structureMeshes.get(s.id)||[]).forEach(m=>{const mats=Array.isArray(m.material)?m.material:[m.material];mats.forEach(mat=>{if(!mat)return;if(mat.emissive)mat.emissive.set(on?0x28f7c7:0x000000);if(on && mat.color)mat.color.lerp(new THREE.Color(0x7fffe9),.25); else if(mat.color&&m.userData.baseColor)mat.color.copy(m.userData.baseColor)})})}
+function pulseHighlight(t){if(!highlighted)return;const v=.45+.35*Math.sin(t*.006);(structureMeshes.get(highlighted.id)||[]).forEach(m=>{const mats=Array.isArray(m.material)?m.material:[m.material];mats.forEach(mat=>{if(mat&&mat.emissive)mat.emissive.setRGB(0.05,v*.75,v*.62)})})}
+function structureCenter(s){const meshes=structureMeshes.get(s.id)||[];if(!meshes.length)return null;const box=new THREE.Box3();meshes.forEach(m=>box.expandByObject(m));const c=new THREE.Vector3();box.getCenter(c);const size=new THREE.Vector3();box.getSize(size);return {c,size:Math.max(size.x,size.y,size.z,.25)}}
+function focusStructure(s,spin=false){const d=structureCenter(s);if(!d)return;const dir=camera.position.clone().sub(controls.target).normalize();const dist=Math.max(1.35,d.size*5.4);const target=d.c.clone();const pos=target.clone().add(dir.multiplyScalar(dist));camTween={t0:performance.now(),fromP:camera.position.clone(),toP:pos,fromT:controls.target.clone(),toT:target};if(spin)autoSpinUntil=performance.now()+900}
+function presetView(v){const target=new THREE.Vector3(0,.35,0),dist=8;const map={front:[0,.5,dist],back:[0,.5,-dist],left:[-dist,.5,0],right:[dist,.5,0]};camTween={t0:performance.now(),fromP:camera.position.clone(),toP:new THREE.Vector3(...map[v]),fromT:controls.target.clone(),toT:target}}
+function animate(t=0){requestAnimationFrame(animate);if(camTween){const u=Math.min(1,(performance.now()-camTween.t0)/520),e=1-Math.pow(1-u,3);camera.position.lerpVectors(camTween.fromP,camTween.toP,e);controls.target.lerpVectors(camTween.fromT,camTween.toT,e);if(u>=1)camTween=null}controls.autoRotate=performance.now()<autoSpinUntil;controls.autoRotateSpeed=4;pulseHighlight(t);controls.update();renderer.render(scene,camera)}
+
+function add3DEvents(){
+  renderer.domElement.addEventListener('pointerup',ev=>{if(ev.button!==0)return;const s=pickAt(ev);if(!s)return;handleModelTap(s)});
+  renderer.domElement.addEventListener('dblclick',ev=>{const s=pickAt(ev);if(s)focusStructure(s,false)});
+  renderer.domElement.addEventListener('touchend',ev=>{const now=Date.now();if(now-lastTap<330){const touch=ev.changedTouches[0];if(touch){const s=pickAt({clientX:touch.clientX,clientY:touch.clientY});if(s)focusStructure(s,false)}}lastTap=now},{passive:true});
+  renderer.domElement.addEventListener('dragover',ev=>{ev.preventDefault();renderer.domElement.classList.add('dropHint')});renderer.domElement.addEventListener('dragleave',()=>renderer.domElement.classList.remove('dropHint'));renderer.domElement.addEventListener('drop',ev=>{ev.preventDefault();renderer.domElement.classList.remove('dropHint');const id=ev.dataTransfer.getData('text/anatomy-id');if(id&&quiz.current)checkAnswer(byId.get(id)?.name||'')});
+}
+function pickAt(ev){const r=renderer.domElement.getBoundingClientRect();pointer.x=((ev.clientX-r.left)/r.width)*2-1;pointer.y=-((ev.clientY-r.top)/r.height)*2+1;raycaster.setFromCamera(pointer,camera);const hits=raycaster.intersectObjects(pickables.filter(m=>m.visible),false);if(!hits.length)return null;return byId.get(hits[0].object.userData.structureId)||null}
+function handleModelTap(s){selected=s;showInfo(s);if(els.mode.value==='explore'){setHighlight(s);return}if(!quiz.active||quiz.answered)return;if((els.mode.value==='matching'&&els.answerStyle.value==='reverse')||(els.mode.value==='identify'&&els.answerStyle.value==='reverse'))checkAnswer(s.name);}
+
+function showInfo(s){els.infoName.textContent=s.name;els.infoLatin.textContent=s.latin||'';let h=`<b>Section</b><span>${esc(s.section)}</span><b>Type</b><span>${s.kind}</span>`;if(s.kind==='muscle')h+=`<b>Origin</b><span>${esc(s.origin)}</span><b>Insertion</b><span>${esc(s.insertion)}</span><b>Action</b><span>${esc(s.action)}</span>`;els.infoDetails.innerHTML=h}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+function buildSectionChips(){SECTIONS.forEach(sec=>{const b=document.createElement('button');b.className='chip on';b.textContent=sec;b.dataset.section=sec;b.onclick=()=>b.classList.toggle('on');els.chips.appendChild(b)})}
+function selectedSections(){return [...els.chips.querySelectorAll('.chip.on')].map(x=>x.dataset.section)}
+function pool(){const secs=selectedSections();const k=els.kind.value;return STRUCTURES.filter(s=>secs.includes(s.section)&&(k==='both'||s.kind===k))}
+function buildQueue(arr,n){const source=[...arr],out=[];while(source.length&&out.length<n){const s=weightedPick(source);out.push(s);source.splice(source.indexOf(s),1)}return out}
+function startQuiz(custom){
+  if(els.mode.value==='explore'){quiz.active=false;setHighlight(null);els.prompt.textContent='Tap a structure to explore it.';els.detail.textContent='Select any visible mesh to highlight it and see details.';clearAnswerUI();updateStats();return}
+  let p=custom||pool(); if(els.mode.value==='function')p=p.filter(s=>s.kind==='muscle'); if(!p.length){feedback('Select at least one section with matching structures.',false);return}
+  const wanted=els.count.value==='all'?p.length:Math.min(+els.count.value,p.length);quiz={active:true,queue:buildQueue(p,wanted),total:wanted,index:0,score:0,streak:0,current:null,missed:new Map(),seen:new Set(),answered:false,startTime:Date.now(),timerHandle:null,retryOnly:!!custom};startTimer();nextQuestion();updateStats();
+}
+function startTimer(){clearInterval(quiz.timerHandle);if(!$('timerToggle').checked){els.timer.textContent='—';return}quiz.timerHandle=setInterval(()=>{const sec=Math.floor((Date.now()-quiz.startTime)/1000);els.timer.textContent=`${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`},250)}
+function nextQuestion(){
+  clearAnswerUI(); if(quiz.index>=quiz.queue.length){finishQuiz();return}quiz.current=quiz.queue[quiz.index];quiz.answered=false;quiz.index++;renderQuestion();updateStats();
+}
+function renderQuestion(){const s=quiz.current,mode=els.mode.value,style=els.answerStyle.value;setHighlight(null);els.feedback.textContent='';
+  if(mode==='identify'){
+    if(style==='reverse'){els.prompt.textContent=`Tap the ${s.kind} on the model:`;els.detail.textContent=s.name;setHighlight(null)}
+    else {els.prompt.textContent=`Identify the highlighted ${s.kind}.`;els.detail.textContent=`Section: ${s.section}`;setHighlight(s);renderAnswerControls(s)}
+  } else if(mode==='matching'){
+    if(style==='reverse'){els.prompt.textContent='Tap the matching structure on the model.';els.detail.textContent=s.name;setHighlight(null)}
+    else {els.prompt.textContent='Match a label to the highlighted structure.';els.detail.textContent='Tap a label, or drag it onto the 3D view.';setHighlight(s);renderChoices(s,true)}
+  } else if(mode==='function'){
+    setHighlight(style==='reverse'?null:s); if(style==='reverse'){els.prompt.textContent='Tap the muscle that matches this function.';els.detail.innerHTML=`<b>Origin:</b> ${esc(s.origin)}<br><b>Insertion:</b> ${esc(s.insertion)}<br><b>Action:</b> ${esc(s.action)}`}
+    else {els.prompt.textContent='Which muscle matches these details?';els.detail.innerHTML=`<b>Origin:</b> ${esc(s.origin)}<br><b>Insertion:</b> ${esc(s.insertion)}<br><b>Action:</b> ${esc(s.action)}`;renderAnswerControls(s)}
+  }
+}
+function renderAnswerControls(s){if(els.answerStyle.value==='typed'){els.typedWrap.classList.remove('hidden');els.typed.value='';setTimeout(()=>els.typed.focus(),50)}else renderChoices(s,false)}
+function distractorsFor(s){let candidates=pool().filter(x=>x.id!==s.id&&x.kind===s.kind);if(els.mode.value==='function')candidates=candidates.filter(x=>x.kind==='muscle');const same=candidates.filter(x=>x.section===s.section);let picks=shuffle(same).slice(0,3);if(picks.length<3)picks=picks.concat(shuffle(candidates.filter(x=>!picks.includes(x))).slice(0,3-picks.length));if(picks.length<3){const global=STRUCTURES.filter(x=>x.id!==s.id&&x.kind===s.kind&&!picks.includes(x));picks=picks.concat(shuffle(global).slice(0,3-picks.length))}return shuffle([s,...picks].slice(0,4))}
+function renderChoices(s,matching){els.choices.innerHTML='';distractorsFor(s).forEach(o=>{const b=document.createElement('button');b.className='choice'+(matching?' match-label':'');b.textContent=o.name;b.dataset.answer=o.name;b.dataset.id=o.id;b.onclick=()=>checkAnswer(o.name);b.draggable=matching;b.addEventListener('dragstart',ev=>ev.dataTransfer.setData('text/anatomy-id',o.id));els.choices.appendChild(b)})}
+function clearAnswerUI(){els.choices.innerHTML='';els.typedWrap.classList.add('hidden');els.feedback.textContent='';els.feedback.className='feedback'}
+function levenshtein(a,b){a=norm(a);b=norm(b);const d=Array.from({length:a.length+1},()=>Array(b.length+1).fill(0));for(let i=0;i<=a.length;i++)d[i][0]=i;for(let j=0;j<=b.length;j++)d[0][j]=j;for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length]}
+function answerMatches(input,s){const vals=[s.name,s.latin].filter(Boolean);const n=norm(input);return vals.some(v=>{const nv=norm(v);return n===nv||levenshtein(n,nv)<=Math.max(1,Math.round(nv.length*.12))})}
+function checkAnswer(answer){if(!quiz.active||quiz.answered||!quiz.current)return;const s=quiz.current,ok=answerMatches(answer,s),first=!quiz.seen.has(s.id);quiz.answered=true;quiz.seen.add(s.id);recordAttempt(s,ok);if(ok){if(first)quiz.score++;quiz.streak++;feedback(`Correct — ${s.name}${first?'':' (review)'}`,true)}else{quiz.streak=0;quiz.missed.set(s.id,s);feedback(`Not quite. Correct: ${s.name}`,false);if(!quiz.retryOnly&&quiz.queue.length<quiz.total+Math.ceil(quiz.total*.4)&&Math.random()<.72)quiz.queue.splice(Math.min(quiz.index+2,quiz.queue.length),0,s)}showInfo(s);setHighlight(s);markChoiceButtons(s,answer,ok);updateStats();setTimeout(nextQuestion,ok?850:1550)}
+function markChoiceButtons(s,answer,ok){[...els.choices.children].forEach(b=>{if(answerMatches(b.dataset.answer,s))b.classList.add('correct');else if(norm(b.dataset.answer)===norm(answer)&&!ok)b.classList.add('wrong');b.disabled=true})}
+function feedback(msg,good){els.feedback.textContent=msg;els.feedback.className='feedback '+(good?'good':'bad')}
+function updateStats(){els.score.textContent=quiz.score||0;els.streak.textContent=quiz.streak||0;els.qnum.textContent=quiz.active?`${Math.min(quiz.index,quiz.total)}/${quiz.total}`:'0/0'}
+function finishQuiz(){quiz.active=false;clearInterval(quiz.timerHandle);setHighlight(null);const missed=[...quiz.missed.values()];const pct=quiz.total?Math.round(quiz.score/quiz.total*100):0;$('summaryBody').innerHTML=`<p><b>${quiz.score}/${quiz.total}</b> correct (${pct}%).</p>${missed.length?`<h3>Missed structures</h3><div class="missed">${missed.map(s=>`<div><b>${esc(s.name)}</b><br><span class="tiny">${esc(s.section)}${s.kind==='muscle'?` • ${esc(s.action)}`:''}</span></div>`).join('')}</div>`:'<p>Perfect round.</p>'}`;$('retryMissed').style.display=missed.length?'block':'none';$('summaryModal').classList.add('open')}
+function hint(){if(!quiz.current||!quiz.active)return;const s=quiz.current;feedback(`Hint: ${s.name[0]}… • ${s.section}`,true)}
+
+function showProgress(){const rows=SECTIONS.map(sec=>{const ss=STRUCTURES.filter(s=>s.section===sec);let a=0,c=0;ss.forEach(s=>{const p=progress[s.id];if(p){a+=p.attempts;c+=p.correct}});const pct=a?Math.round(c/a*100):0;return `<div class="progressRow"><div style="display:flex;justify-content:space-between"><b>${esc(sec)}</b><span>${pct}% • ${a} attempts</span></div><div class="bar"><i style="width:${pct}%"></i></div></div>`}).join('');$('progressBody').innerHTML=rows;$('progressModal').classList.add('open')}
+
+function resolveStructureForMesh(name){const direct=MESH_NAME_MAP[name];if(direct){const x=STRUCTURES.find(s=>s.name===direct);if(x)return x}const n=norm(name);if(nameIndex.has(n))return nameIndex.get(n);let best=null,bestLen=0;for(const s of STRUCTURES){const sn=norm(s.name);if(sn.length>5&&(n.includes(sn)||sn.includes(n))&&Math.min(n.length,sn.length)>bestLen){best=s;bestLen=Math.min(n.length,sn.length)}}return best}
+function loadGLB(file){if(typeof THREE.GLTFLoader!=='function'){alert('The optional GLB loader did not load. The built-in body still works. Reopen this file with internet access and reload before importing a .glb.');return}const reader=new FileReader();reader.onload=()=>{const loader=new THREE.GLTFLoader();loader.parse(reader.result,'',gltf=>{clearModel();importRoot=gltf.scene;world.add(importRoot);structureMeshes=new Map();pickables=[];let mapped=0,unmapped=0;importRoot.traverse(o=>{if(!o.isMesh)return;const s=resolveStructureForMesh(o.name);if(s){o.userData.structureId=s.id;o.material=cloneMaterial(o.material);const mats=Array.isArray(o.material)?o.material:[o.material];mats.forEach(mat=>{if(mat){mat.transparent=s.kind==='muscle'||mat.transparent; if(s.kind==='muscle')mat.opacity=Math.min(mat.opacity??1,.62);}});o.userData.baseOpacity=(Array.isArray(o.material)?o.material[0]:o.material)?.opacity??1;o.userData.baseColor=(Array.isArray(o.material)?o.material[0]:o.material)?.color?.clone?.();registerMesh(s,o);mapped++}else{unmapped++;o.visible=false}});normalizeImported(importRoot);applyLayers();els.modelStatus.textContent=`${file.name} • ${mapped} mapped meshes${unmapped?` • ${unmapped} hidden/unmapped`:''}`;presetView('front')},err=>{console.error(err);alert('Could not parse that GLB. Try an uncompressed GLB or one without Draco compression.')})};reader.readAsArrayBuffer(file)}
+function cloneMaterial(mat){if(Array.isArray(mat))return mat.map(m=>m.clone());return mat?.clone?mat.clone():mat}
+function normalizeImported(root){const box=new THREE.Box3().setFromObject(root);const size=new THREE.Vector3();box.getSize(size);const center=new THREE.Vector3();box.getCenter(center);const max=Math.max(size.x,size.y,size.z)||1;const scale=6.5/max;root.scale.multiplyScalar(scale);root.updateMatrixWorld(true);const box2=new THREE.Box3().setFromObject(root);const c2=new THREE.Vector3();box2.getCenter(c2);root.position.sub(c2);root.position.y+=.15}
+
+$('loadBtn').onclick=()=>$('fileInput').click();$('fileInput').onchange=e=>{const f=e.target.files[0];if(f)loadGLB(f);e.target.value=''};$('resetBtn').onclick=buildFallback;els.layer.onchange=()=>{layerMode=els.layer.value;applyLayers()};
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>presetView(b.dataset.view));$('startBtn').onclick=()=>startQuiz();$('hintBtn').onclick=hint;$('submitTyped').onclick=()=>checkAnswer(els.typed.value);els.typed.addEventListener('keydown',e=>{if(e.key==='Enter')checkAnswer(els.typed.value)});$('progressBtn').onclick=showProgress;$('allSections').onclick=()=>els.chips.querySelectorAll('.chip').forEach(c=>c.classList.add('on'));$('clearSections').onclick=()=>els.chips.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));els.mode.onchange=()=>{if(els.mode.value==='function'){els.kind.value='muscle'}startQuiz()};
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).classList.remove('open'));$('summaryDone').onclick=()=>$('summaryModal').classList.remove('open');$('retryMissed').onclick=()=>{const arr=[...quiz.missed.values()];$('summaryModal').classList.remove('open');startQuiz(arr)};
+
+buildSectionChips();try{init3D()}catch(e){console.error(e)}showInfo(STRUCTURES[0]);updateStats();
+</script>
+</body>
+</html>
